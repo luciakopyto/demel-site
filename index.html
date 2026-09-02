@@ -8,15 +8,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
+<script src="js/nav.js" defer></script>
 </head>
 <body>
 
 <header>
   <div class="nav">
     <a href="index.html"><img class="logo-mark" src="assets/iso-blanco.png" alt="DEMEL"></a>
-    <div class="nav-center"></div>
     <nav class="nav-links">
       <a href="novedades.html">Novedades</a>
+      <a href="links.html">Links de Interés</a>
     </nav>
     <button class="menu-btn" aria-label="Menú"><span></span><span></span><span></span></button>
   </div>
@@ -34,8 +35,14 @@
 
 <section id="quienes-somos">
   <div class="wrap about">
-    <div class="about-figure">
-      <img src="assets/about-photo.jpg" alt="Equipo de DEMEL trabajando con planillas contables">
+    <div class="about-figure-wrap">
+      <div class="about-figure">
+        <img src="assets/about-photo.jpg" alt="Equipo de DEMEL trabajando con planillas contables">
+      </div>
+      <div class="about-badge">
+        <img class="about-badge-icon" src="assets/iso-blanco.png" alt="">
+        <img class="about-badge-word" src="assets/logo-blanco.png" alt="DEMEL — Estudio Contable">
+      </div>
     </div>
     <div class="about-body">
       <p class="kicker">Quiénes somos</p>
@@ -178,6 +185,21 @@
 <footer>
   <div class="wrap footer-inner">
     <img src="assets/logo-blanco.png" alt="DEMEL — Estudio Contable">
+
+    <div class="footer-titulares">
+      <p class="footer-titulares-label">El Estudio — Titulares</p>
+      <div class="footer-titulares-list">
+        <div class="footer-titular">
+          <p class="name">Cr. Fabián Javier Demel</p>
+          <a href="mailto:estudio@demel.com.ar">estudio@demel.com.ar</a>
+        </div>
+        <div class="footer-titular">
+          <p class="name">Cra. Vanesa Vega</p>
+          <a href="mailto:vanesa@demel.com.ar">vanesa@demel.com.ar</a>
+        </div>
+      </div>
+    </div>
+
     <p class="copy">© 2026 Estudio Demel — Consultoría, Impuestos y Contabilidad</p>
   </div>
 </footer>
