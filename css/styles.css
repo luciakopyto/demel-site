@@ -37,8 +37,8 @@
     padding: 20px 32px;
     max-width: 1180px; margin:0 auto;
   }
-  .nav .logo-mark{ width: 34px; display: block; }
-  .nav-links{ display:flex; gap: 40px; }
+  .nav .logo-mark{ width: 44px; display: block; }
+  .nav-links{ display:flex; gap: 30px; }
   .nav-links a{
     color: var(--linen);
     font-size: 13px;
@@ -92,7 +92,7 @@
     right: -60px; top: 50%;
     transform: translateY(-50%);
     width: 560px;
-    opacity: 0.07;
+    opacity: 0.14;
     pointer-events:none;
   }
   .hero-inner{
@@ -136,7 +136,7 @@
   @media (max-width: 640px){
     .hero{ padding: 70px 0 90px; }
     .hero h1{ font-size: 34px; }
-    .hero .iso-watermark{ width: 340px; opacity: 0.06; }
+    .hero .iso-watermark{ width: 340px; opacity: 0.12; }
   }
 
   /* ---------- Page banner (páginas internas) ---------- */
@@ -209,7 +209,7 @@
   .about-badge{
     position: absolute;
     right: -22px; bottom: -22px;
-    width: 33%;
+    width: 40%;
     min-width: 150px;
     box-sizing: border-box;
     background: var(--navy);
@@ -351,6 +351,29 @@
   }
 
   /* ---------- Novedades ---------- */
+  .novedades-search{
+    max-width: 780px;
+    margin: 0 auto 44px;
+  }
+  .novedades-search input{
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 2px;
+    border: none;
+    border-bottom: 1px solid var(--stone-light);
+    background: transparent;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .novedades-search input::placeholder{ color: var(--stone); }
+  .novedades-search input:focus{ border-bottom-color: var(--navy); }
+  .novedades-search input:disabled{ opacity: 0.5; cursor: default; }
+  .novedades-search input::-webkit-search-cancel-button{ cursor: pointer; }
   .novedades-list{
     display:flex; flex-direction:column;
     max-width: 780px; margin: 0 auto;
@@ -364,12 +387,28 @@
   }
   .novedades-list .novedad-item:last-child{ border-bottom: 1px solid var(--line); }
   .novedad-date{
+    display:flex; flex-direction:column; align-items:flex-start;
+    gap: 10px;
     font-size: 12px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--stone);
     padding-top: 3px;
   }
+  .novedad-tag{
+    display:inline-block;
+    padding: 3px 9px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    color: var(--stone);
+    white-space: nowrap;
+  }
+  .novedad-tag.tag-laborales{ border-color: rgba(15,34,59,0.3); color: var(--navy); }
+  .novedad-tag.tag-salariales{ border-color: var(--stone-light); color: var(--stone); }
+  .novedad-tag.tag-impositivas{ background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .novedad-tag.tag-otras{ border-color: var(--line); color: var(--stone); }
   .novedad-body h3{
     font-size: 19px;
     font-weight: 700;
@@ -447,38 +486,34 @@
     gap: 18px;
   }
   .footer-inner img{ height: 48px; opacity: 0.85; }
-  .footer-titulares{
-    display:flex; flex-direction:column; align-items:center;
-    gap: 16px;
-    padding: 26px 0;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    width: 100%;
-  }
-  .footer-titulares-label{
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--stone-light);
-    margin: 0;
-  }
-  .footer-titulares-list{
-    display:flex; flex-wrap: wrap; justify-content:center;
-    gap: 36px;
-  }
-  .footer-titular .name{
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--white);
-    margin: 0 0 4px;
-  }
-  .footer-titular a{
-    font-size: 12.5px;
-    color: var(--linen);
-  }
-  .footer-titular a:hover{ color: var(--white); text-decoration: underline; }
   .footer-inner .copy{
     font-size: 12px;
     color: var(--stone-light);
     letter-spacing: 0.04em;
+  }
+
+  /* ---------- Botón flotante de WhatsApp ---------- */
+  .whatsapp-fab{
+    position: fixed;
+    right: 24px; bottom: 24px;
+    width: 58px; height: 58px;
+    display:flex; align-items:center; justify-content:center;
+    background: #25D366;
+    border-radius: 50%;
+    box-shadow: 0 14px 30px rgba(15,34,59,0.32);
+    z-index: 999;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .whatsapp-fab svg{ width: 28px; height: 28px; fill: var(--white); display:block; }
+  .whatsapp-fab:hover{
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 18px 36px rgba(15,34,59,0.4);
+  }
+  @media (max-width: 640px){
+    .whatsapp-fab{ right: 16px; bottom: 16px; width: 52px; height: 52px; }
+    .whatsapp-fab svg{ width: 25px; height: 25px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .whatsapp-fab{ transition: none; }
+    .whatsapp-fab:hover{ transform: none; }
   }
