@@ -98,7 +98,7 @@
     if (h.indexOf('texto') !== -1 || h.indexOf('contenido') !== -1 || h.indexOf('descripcion') !== -1) return 'texto';
     if (h.indexOf('link') !== -1 || h.indexOf('enlace') !== -1) return 'link';
     if (h.indexOf('imagen') !== -1 || h.indexOf('foto') !== -1) return 'imagen';
-    if (h.indexOf('categoria') !== -1 || h.indexOf('tag') !== -1 || h.indexOf('etiqueta') !== -1 || h.indexOf('clasificacion') !== -1) return 'categoria';
+    if (h.indexOf('categoria') !== -1 || h.indexOf('tag') !== -1 || h.indexOf('etiqueta') !== -1 || h.indexOf('clasificacion') !== -1 || h.indexOf('tipo de novedad') !== -1) return 'categoria';
     return h;
   }
 
