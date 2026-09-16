@@ -345,7 +345,10 @@
     gap: 32px;
     padding: 34px 0;
     border-top: 1px solid var(--line);
+    scroll-margin-top: 96px;
+    transition: background-color 1s ease;
   }
+  .novedad-item.is-shared{ background-color: var(--linen-light); }
   .novedades-list .novedad-item:last-child{ border-bottom: 1px solid var(--line); }
   .novedad-date{
     display:flex; flex-direction:column; align-items:flex-start;
@@ -387,15 +390,26 @@
     margin: 0 0 12px;
     white-space: pre-line;
   }
-  .novedad-body a.novedad-link{
-    display:inline-block;
+  .novedad-actions{
+    display:flex; flex-wrap:wrap;
+    align-items:center;
+    gap: 26px;
+  }
+  .novedad-link{
+    display:inline-flex; align-items:center; gap: 6px;
     font-size: 12px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--navy);
+    border: none;
     border-bottom: 1px solid var(--navy);
-    padding-bottom: 1px;
+    padding: 0 0 1px;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
   }
+  .novedad-share svg{ width: 13px; height: 13px; }
+  .novedad-share.is-copied{ color: var(--stone); border-bottom-color: var(--stone); }
   .novedades-empty{
     text-align:center;
     color: #4A4540;
