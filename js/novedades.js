@@ -42,8 +42,10 @@
         return;
       }
 
+      assignIds(items);
       allItems = items;
       renderList(allItems);
+      goToSharedItem();
 
       if (searchInput) {
         searchInput.disabled = false;
@@ -56,6 +58,15 @@
       console.error(err);
       container.innerHTML = '<p class="novedades-empty">No se pudieron cargar las novedades en este momento.</p>';
     });
+
+  // Copiar link de una novedad puntual: un solo listener en el contenedor,
+  // así sigue andando después de que el buscador vuelve a pintar la lista.
+  container.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('.novedad-share') : null;
+    if (!btn) return;
+    var url = window.location.href.split('#')[0] + '#' + btn.getAttribute('data-id');
+    copyToClipboard(url, btn);
+  });
 
   // Filtra allItems por palabra clave (busca en título, texto y categoría) y
   // vuelve a pintar la lista.
@@ -83,6 +94,83 @@
   }
 
   // ---- helpers ----
+
+  // Genera un slug legible a partir del título + fecha (ej: "nuevo-regimen-2026-09-02")
+  // para poder linkear a una novedad puntual. Se recalcula solo, no depende de
+  // ninguna columna nueva en el Sheet. Si dos quedan iguales (mismo título y
+  // fecha), se numeran para no pisarse.
+  function assignIds(items) {
+    var seen = {};
+    items.forEach(function (item) {
+      var slug = slugify(item.titulo).slice(0, 60) || 'novedad';
+      var t = parseDate(item.fecha);
+      if (t) {
+        var d = new Date(t);
+        slug += '-' + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate());
+      }
+      var id = slug;
+      var n = 2;
+      while (seen[id]) { id = slug + '-' + n; n++; }
+      seen[id] = true;
+      item.id = id;
+    });
+  }
+
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function slugify(str) {
+    str = (str || '').toLowerCase().trim();
+    str = str.normalize ? str.normalize('NFD').replace(/[̀-ͯ]/g, '') : str;
+    return str.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
+
+  // Si la URL trae #id-de-una-novedad (por un link compartido), hace scroll
+  // hasta ella y la resalta un instante para que se note cuál es.
+  function goToSharedItem() {
+    var id = decodeURIComponent((window.location.hash || '').replace(/^#/, ''));
+    if (!id) return;
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.add('is-shared');
+    setTimeout(function () { el.classList.remove('is-shared'); }, 2200);
+  }
+
+  // Copia `text` al portapapeles y muestra un "¡Copiado!" momentáneo en el botón.
+  function copyToClipboard(text, btn) {
+    var done = function () {
+      var original = btn.getAttribute('data-label') || btn.textContent.trim();
+      btn.setAttribute('data-label', original);
+      btn.classList.add('is-copied');
+      btn.querySelector('.label').textContent = '¡Copiado!';
+      setTimeout(function () {
+        btn.classList.remove('is-copied');
+        btn.querySelector('.label').textContent = original;
+      }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(function () { legacyCopy(text, done); });
+    } else {
+      legacyCopy(text, done);
+    }
+  }
+
+  function legacyCopy(text, done) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      done();
+    } catch (e) {
+      window.prompt('Copiá el link:', text);
+    }
+  }
 
   // Minúsculas y sin acentos, para comparar texto de forma laxa (usado por el buscador).
   function normalizeText(str) {
@@ -162,6 +250,15 @@
     });
   }
 
+  // Negrita/itálica con la misma sintaxis que WhatsApp: *negrita* y _itálica_.
+  // Siempre se escapa primero, así que lo único que se inyecta son <strong>/<em>.
+  function formatText(str) {
+    var html = escapeHTML(str);
+    html = html.replace(/\*([^*\n]+)\*/g, '<strong>$1</strong>');
+    html = html.replace(/_([^_\n]+)_/g, '<em>$1</em>');
+    return html;
+  }
+
   // Solo permite http/https, para no exponer el sitio a esquemas raros
   // (javascript:, data:, etc.) cargados desde las respuestas del formulario.
   function sanitizeUrl(url) {
@@ -173,25 +270,40 @@
     return '';
   }
 
+  // Si es un link "para ver" de Google Drive (el que da la pregunta de tipo
+  // "Subir archivos" del formulario), lo convierte en una URL que sirve la
+  // imagen directamente — la de Drive normal muestra una página, no la imagen.
+  function driveDirectUrl(url) {
+    if (!url) return url;
+    var m = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([-\w]{10,})/);
+    return m ? 'https://drive.google.com/uc?export=view&id=' + m[1] : url;
+  }
+
+  var LINK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+    'stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3"/>' +
+    '<path d="M9 17H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
+
   function renderItem(item) {
-    var imgUrl = sanitizeUrl(item.imagen);
+    var imgUrl = sanitizeUrl(driveDirectUrl(item.imagen));
     var linkUrl = sanitizeUrl(item.link);
     var img = imgUrl ? '<img src="' + escapeHTML(imgUrl) + '" alt="">' : '';
     var link = linkUrl
       ? '<a class="novedad-link" href="' + escapeHTML(linkUrl) + '" target="_blank" rel="noopener">Leer más</a>'
       : '';
+    var share = '<button type="button" class="novedad-link novedad-share" data-id="' + escapeHTML(item.id) + '">' +
+      LINK_ICON + '<span class="label">Copiar link</span></button>';
     var tag = item.categoria
       ? '<span class="novedad-tag tag-' + categorySlug(item.categoria) + '">' + escapeHTML(item.categoria) + '</span>'
       : '';
 
     return '' +
-      '<div class="novedad-item">' +
+      '<div class="novedad-item" id="' + escapeHTML(item.id) + '">' +
         '<div class="novedad-date">' + escapeHTML(formatDate(item.fecha)) + tag + '</div>' +
         '<div class="novedad-body">' +
           '<h3>' + escapeHTML(item.titulo) + '</h3>' +
           img +
-          '<p>' + escapeHTML(item.texto) + '</p>' +
-          link +
+          '<p>' + formatText(item.texto) + '</p>' +
+          '<div class="novedad-actions">' + link + share + '</div>' +
         '</div>' +
       '</div>';
   }
